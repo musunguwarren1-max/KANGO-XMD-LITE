@@ -1,67 +1,34 @@
-// Wrapper for KANGO XMD to work on Render
+// Simple wrapper for KANGO XMD
 const { spawn } = require('child_process');
 const http = require('http');
-const fs = require('fs');
 
-console.log('🚀 Starting KANGO XMD Bot Wrapper...');
+console.log('🚀 Starting KANGO XMD Bot...');
 
-// Force environment variables
-process.env.SKIP_INSTALL = 'true';
-process.env.DISABLE_AUTO_UPDATE = 'true';
-process.env.AUTO_INSTALL = 'false';
-
-// Create a marker to prevent reinstall
-const markerFile = './.installed';
-if (!fs.existsSync(markerFile)) {
-    fs.writeFileSync(markerFile, Date.now().toString());
-    console.log('✅ Installation marker created');
-}
-
-// Create session directory
-if (!fs.existsSync('./session')) {
-    fs.mkdirSync('./session');
-    console.log('📁 Created session directory');
-}
-
-// Start the bot
-console.log('🤖 Launching KANGO XMD bot...');
-
+// Start the bot directly
 const bot = spawn('node', ['index.js'], {
-    env: { 
-        ...process.env,
-        SKIP_INSTALL: 'true',
-        DISABLE_AUTO_UPDATE: 'true'
-    },
+    env: process.env,
     cwd: process.cwd()
 });
 
 bot.stdout.on('data', (data) => {
-    const output = data.toString();
-    console.log(`[BOT]: ${output}`);
-    
-    if (output.includes('connected') || output.includes('Connected')) {
-        console.log('🎉 BOT CONNECTED SUCCESSFULLY!');
-    }
+    console.log(data.toString());
 });
 
 bot.stderr.on('data', (data) => {
-    console.error(`[BOT ERROR]: ${data.toString()}`);
+    console.error(data.toString());
 });
 
-// HTTP server
+// Simple HTTP server for Render
 const PORT = process.env.PORT || 3000;
 const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('🤖 KANGO XMD Bot is running!\n');
+    res.writeHead(200);
+    res.end('KANGO XMD Bot Running\n');
 });
 
 server.listen(PORT, () => {
-    console.log(`✅ HTTP server running on port ${PORT}`);
-    console.log(`✅ Bot wrapper active`);
+    console.log(`✅ Server on port ${PORT}`);
 });
 
 bot.on('exit', (code) => {
     console.log(`Bot exited with code ${code}`);
 });
-
-console.log('✅ Wrapper ready');
