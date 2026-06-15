@@ -8,8 +8,10 @@
     "npm": ">= 10.x"
   },
   "scripts": {
-    "start": "node index.js"
-  },
+    "start": "node index.js",
+    "postinstall": "echo 'Skipping postinstall - already installed'",
+    "install": "npm install --no-scripts"
+},
   "author": "Hector Manuel",
   "license": "MIT",
   "dependencies": {
