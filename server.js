@@ -3,35 +3,34 @@ const { spawn } = require('child_process');
 const http = require('http');
 const fs = require('fs');
 
-// Force skip install
+console.log('🚀 Starting KANGO XMD Bot Wrapper...');
+
+// Force environment variables
 process.env.SKIP_INSTALL = 'true';
 process.env.DISABLE_AUTO_UPDATE = 'true';
 process.env.AUTO_INSTALL = 'false';
 
-console.log('🚀 Starting KANGO XMD Bot Wrapper...');
-
-// Create a marker file to indicate install is done
+// Create a marker to prevent reinstall
 const markerFile = './.installed';
 if (!fs.existsSync(markerFile)) {
     fs.writeFileSync(markerFile, Date.now().toString());
     console.log('✅ Installation marker created');
 }
 
-// Ensure session directory exists
+// Create session directory
 if (!fs.existsSync('./session')) {
     fs.mkdirSync('./session');
     console.log('📁 Created session directory');
 }
 
-// Start the actual KANGO bot with modified environment
+// Start the bot
 console.log('🤖 Launching KANGO XMD bot...');
 
 const bot = spawn('node', ['index.js'], {
     env: { 
         ...process.env,
         SKIP_INSTALL: 'true',
-        DISABLE_AUTO_UPDATE: 'true',
-        AUTO_INSTALL: 'false'
+        DISABLE_AUTO_UPDATE: 'true'
     },
     cwd: process.cwd()
 });
@@ -58,6 +57,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, () => {
     console.log(`✅ HTTP server running on port ${PORT}`);
+    console.log(`✅ Bot wrapper active`);
 });
 
 bot.on('exit', (code) => {
